@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include "ShaderLoader.h"
+#include "Shader.h"
 
 class Renderer {
 public:
@@ -18,6 +20,11 @@ public:
     void Begin(glm::mat4 transformMatrix);
     void End();
 
+    void DrawLines(GLuint VAO, float width, int points);
+    void DrawSprite(GLuint VAO, float width, int points);
+
+    std::shared_ptr<Shader> GetGeometryShader() const { return _geometryShader; }
+
 private:
     GLuint _fbo;
     GLuint _fboTexture;
@@ -30,6 +37,8 @@ private:
     DrawState stack[MAXN];
     int stacktop;
 
+    std::shared_ptr<Shader> _geometryShader;
+    std::shared_ptr<Shader> _lineShader;
 
     glm::mat4 getCurrentTransform();
 };

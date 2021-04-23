@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "Renderer.h"
+#include "LightningTree.h"
 
 class Canvas {
 public:
@@ -24,4 +25,5 @@ private:
     GLFWwindow* _window;
 
     std::shared_ptr<Renderer> _renderer;
+    std::shared_ptr<LightningTree> _lightningTree;
 };

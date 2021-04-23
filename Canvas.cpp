@@ -17,6 +17,7 @@ Canvas& Canvas::GetInstance() {
 
 Canvas::~Canvas() {
     _renderer.reset();
+    _lightningTree.reset();
     glfwDestroyWindow(_window);
     glfwTerminate();
 }
@@ -68,11 +69,11 @@ void Canvas::draw() {
 
     auto projView = projection * view;
 
-    _renderer->SwitchFrameBuffer();
+    // _renderer->SwitchFrameBuffer();
     _renderer->ClearCurrentFrame();
     _renderer->Begin(projView);
     {
-
+        _lightningTree->Draw(_renderer);
     }
     _renderer->End();
 }
@@ -80,4 +81,14 @@ void Canvas::draw() {
 void Canvas::init() {
     _renderer = std::make_shared<Renderer>();
     _renderer->CreateNewFrameBuffer(_width, _height);
+
+
+    // A straight vertical path from top to bottom
+    LightningNode top = { glm::vec2(400, 800), 0, 10 };
+    LightningNode bot = { glm::vec2(400, 0), 0, 8 };
+    std::vector<LightningNode> keyNodes{ top, bot };
+
+    _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 5.14), 0.3f, 0.1f);
+    for(int i = 0; i < 10; i++)
+    _lightningTree->RunOneStep(_renderer);
 }

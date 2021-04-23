@@ -2,6 +2,12 @@
 
 Renderer::Renderer() {
     stacktop = 0;
+    memset(stack, 0, sizeof(stack));
+
+    const char* feedbackValues[3] = { "pos", "branch", "strength" };
+    _geometryShader = std::make_unique<Shader>(loadVertexGeometryShader("lightning_gen.vs", "lightning_gen.geom", feedbackValues, 3));
+
+    _lineShader = std::make_unique<Shader>(loadVertexFragmantShader("line.vs", "line.frag"));
 }
 
 Renderer::~Renderer() {
@@ -52,6 +58,18 @@ void Renderer::Begin(glm::mat4 transformMatrix) {
 void Renderer::End() {
     --stacktop;
 }
+
+void Renderer::DrawLines(GLuint VAO, float width, int points) {
+    _lineShader->Apply();
+    glLineWidth(width);
+
+    _lineShader->SetParameter<glm::mat4>("transform", getCurrentTransform());
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_LINES, 0, points);
+    glBindVertexArray(0);
+}
+
 
 glm::mat4 Renderer::getCurrentTransform() {
     return stack[stacktop].transform;

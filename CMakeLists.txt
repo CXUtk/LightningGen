@@ -2,7 +2,7 @@
 
 project (Lightning VERSION 1.0)
 
-add_executable (Lightning "Lightning.h" "Lightning.cpp" "Canvas.h" "Canvas.cpp" "Renderer.h" "Renderer.cpp" "LightningTree.h" "LightningTree.cpp")
+add_executable (Lightning "Lightning.h" "Lightning.cpp" "Canvas.h" "Canvas.cpp" "Renderer.h" "Renderer.cpp" "LightningTree.h" "LightningTree.cpp" "Shader.h"  "ShaderLoader.h" "ShaderLoader.cpp")
 
 set_target_properties (Lightning PROPERTIES
                       CXX_STANDARD 17
