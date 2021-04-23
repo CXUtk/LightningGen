@@ -23,8 +23,6 @@ private:
     std::vector<LightningNode> _nodes;
     float _alpha, _beta;
 
-    GLuint _mainVAO, _mainVBO;
-
     GLuint _lightningVAO[2], _lightningVBO[2], _lightningTF[2];
     int _swapIndex;
     int _round;

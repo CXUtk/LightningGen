@@ -8,7 +8,7 @@
 
 class Renderer {
 public:
-    Renderer();
+    Renderer(int width, int height);
     ~Renderer();
 
     void ClearCurrentFrame();
@@ -21,7 +21,7 @@ public:
     void End();
 
     void DrawLines(GLuint VAO, float width, int points);
-    void DrawSprite(GLuint VAO, float width, int points);
+    void DrawLightningToScreen();
 
     std::shared_ptr<Shader> GetGeometryShader() const { return _geometryShader; }
 
@@ -39,6 +39,10 @@ private:
 
     std::shared_ptr<Shader> _geometryShader;
     std::shared_ptr<Shader> _lineShader;
+    std::shared_ptr<Shader> _bloomShader;
+
+    GLuint _mainVAO, _mainVBO;
 
     glm::mat4 getCurrentTransform();
+    void initialize(int width, int height);
 };

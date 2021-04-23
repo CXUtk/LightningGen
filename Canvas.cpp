@@ -69,17 +69,28 @@ void Canvas::draw() {
 
     auto projView = projection * view;
 
-    // _renderer->SwitchFrameBuffer();
+    // Render to texture module
+    _renderer->SwitchFrameBuffer();
     _renderer->ClearCurrentFrame();
     _renderer->Begin(projView);
     {
         _lightningTree->Draw(_renderer);
     }
     _renderer->End();
+
+
+    // Render to screen
+    _renderer->ResetFrameBuffer();
+    _renderer->ClearCurrentFrame();
+    _renderer->Begin(projView);
+    {
+        _renderer->DrawLightningToScreen();
+    }
+    _renderer->End();
 }
 
 void Canvas::init() {
-    _renderer = std::make_shared<Renderer>();
+    _renderer = std::make_shared<Renderer>(_width, _height);
     _renderer->CreateNewFrameBuffer(_width, _height);
 
 
@@ -88,7 +99,9 @@ void Canvas::init() {
     LightningNode bot = { glm::vec2(400, 0), 0, 8 };
     std::vector<LightningNode> keyNodes{ top, bot };
 
-    _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 5.14), 0.3f, 0.1f);
-    for(int i = 0; i < 10; i++)
-    _lightningTree->RunOneStep(_renderer);
+    _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 5.14), 0.1f, 0.1f);
+    
+    for (int i = 0; i < 12; i++) {
+        _lightningTree->RunOneStep(_renderer);
+    }
 }
