@@ -63,7 +63,7 @@ void main() {
     float prob = randFloat(coord);
     if ( Round - vBranch[0] < 5 && prob < 0.6 * exp(-0.4 * Round) ) {
         pos = tPos;
-        strength = min(tStrength * 0.9, 2.0);
+        strength = min(tStrength, 2.0);
         branch = vBranch[0] + 1;
         EmitVertex();
 

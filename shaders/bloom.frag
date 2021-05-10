@@ -11,7 +11,7 @@ out vec4 color;
 uniform sampler2D uScreenTexture;
 uniform vec3 uColor;
 
-#define NUM_SAMPLES 20
+#define NUM_SAMPLES 400
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
 
@@ -61,12 +61,24 @@ void main() {
     // color = texture(uScreenTexture, vTexCoord);
     uniformDiskSamples(vTexCoord * 114514);
     float strength = 0.0;
-    for(int i = 0; i < NUM_SAMPLES; i++) {
-        vec2 offset = poissonDisk[i] * 0.05;
-        vec4 c = texture(uScreenTexture, vTexCoord + offset);
-        strength += dot(c, vec4(256.0, 1.0, 1.0 / 256.0, 1.0 / 256.0 / 256.0)) * gauss(offset, 0.5);
+//    for(int i = 0; i < NUM_SAMPLES; i++) {
+//        vec2 offset = poissonDisk[i] * 0.05;
+//        vec4 c = texture(uScreenTexture, vTexCoord + offset);
+//        strength += dot(c, vec4(256.0, 1.0, 1.0 / 256.0, 1.0 / 256.0 / 256.0)) * gauss(offset, 0.5);
+//    }
+    for(int i = -10; i <= 10; i++){
+        for(int j = -10; j <= 10; j++){
+            vec2 offset = vec2(i, j) * 0.003;
+            vec4 c = texture(uScreenTexture, vTexCoord + offset);
+            strength += dot(c, vec4(256.0, 1.0, 1.0 / 256.0, 1.0 / 256.0 / 256.0)) * gauss(offset * 10, 0.1);
+        }
     }
     strength /= NUM_SAMPLES;
+
     float original = dot(texture(uScreenTexture, vTexCoord), vec4(256.0, 1.0, 1.0 / 256.0, 1.0 / 256.0 / 256.0));
-    color = vec4(uColor * max(original, strength), 1.0);
+    vec3 rColor = uColor * max(original, strength);
+    rColor.x = pow(rColor.x, 1 / 2.2);
+    rColor.y = pow(rColor.y, 1 / 2.2);
+    rColor.z = pow(rColor.z, 1 / 2.2);
+    color = vec4(rColor, 1.0);
 }
