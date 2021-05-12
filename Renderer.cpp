@@ -82,7 +82,7 @@ void Renderer::DrawLightningToScreen(GLuint texture) {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     _screenShader->SetParameter<glm::mat4>("transform", getCurrentTransform());
-    _screenShader->SetParameter<glm::vec3>("uColor", glm::vec3(0.1, 0.2, 1.0));
+    _screenShader->SetParameter<glm::vec3>("uColor", glm::vec3(0.2, 0.1, 1.0));
     _screenShader->SetParameter<int>("uTexture", 0);
 
 

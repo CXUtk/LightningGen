@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int main() {
+int main(int argc, char ** argv) {
 	Canvas& canvas = Canvas::GetInstance();
 	canvas.Run();
 	return 0;

@@ -15,6 +15,8 @@ out float strength;
 uniform int Round;
 uniform vec2 uRandomSeed;
 uniform float uAlpha;
+uniform float uBeta;
+uniform float uGamma;
 
 float randFloat(vec2 seed){
     return fract(sin(dot(seed + uRandomSeed, 
@@ -42,7 +44,7 @@ void main() {
     vec2 unit = normalize(vPos[1] - vPos[0]);
     unit = vec2(-unit.y, unit.x);
 
-    pos = (vPos[0] + vPos[1]) * 0.5 + uAlpha * len * extend * unit;
+    pos = (vPos[0] + vPos[1]) * 0.5 + uBeta * len * extend * unit;
     branch = vBranch[0];
     strength = (vStrength[0] + vStrength[1]) * 0.5;
     EmitVertex();
@@ -61,7 +63,7 @@ void main() {
 
     // Split point
     float prob = randFloat(coord);
-    if ( Round - vBranch[0] < 5 && prob < 0.6 * exp(-0.4 * Round) ) {
+    if ( Round - vBranch[0] < 5 && prob < uGamma * exp(-uAlpha * Round) ) {
         pos = tPos;
         strength = tStrength * 0.5;
         branch = tBranch + 1;
@@ -70,7 +72,7 @@ void main() {
         vec2 branchPos = tPos - randFloat(tPos) * unit;
         vec2 branchDir = normalize(normalize(tPos - vPos[0]) + extend * unit * randFloat(tPos));
 
-        float branchLength = (tPos.y * 0.5 + 100) * exp(-0.5 * vBranch[0]) * (0.3 + 0.8 * randFloat(branchPos));
+        float branchLength = (tPos.y * 0.5 + 100) * exp(-uAlpha * vBranch[0]) * (0.3 + 0.8 * randFloat(branchPos));
         pos = tPos + branchDir * branchLength;
         branch = vBranch[0] + 1;
         strength = 0.0;

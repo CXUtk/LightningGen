@@ -1,10 +1,10 @@
 #include "LightningTree.h"
 
 static constexpr int BUFFER_SIZE = 1 << 20;
-static constexpr int MAX_POINTS = 1 << 15;
+static constexpr int MAX_POINTS = 1 << 16;
 
-LightningTree::LightningTree(const std::vector<LightningNode>& keyNodes, glm::vec2 randomSeed, float alpha, float beta)
-: _nodes(keyNodes), _seed(randomSeed), _alpha(alpha), _beta(beta) {
+LightningTree::LightningTree(const std::vector<LightningNode>& keyNodes, glm::vec2 randomSeed, float alpha, float beta, float gamma)
+: _nodes(keyNodes), _seed(randomSeed), _alpha(alpha), _beta(beta), _gamma(gamma) {
 
     _swapIndex = 0;
     _round = 0;
@@ -33,7 +33,7 @@ LightningTree::LightningTree(const std::vector<LightningNode>& keyNodes, glm::ve
 
     glBindVertexArray(_lightningVAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, _lightningVBO[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(LightningNode) * 2, keyNodes.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(LightningNode) * keyNodes.size(), keyNodes.data());
     glBindVertexArray(0);
 }
   
@@ -51,6 +51,8 @@ void LightningTree::RunOneStep(const std::shared_ptr<Renderer>& renderer) {
     shader->SetParameter<int>("Round", _round);
     shader->SetParameter<glm::vec2>("uRandomSeed", _seed);
     shader->SetParameter<float>("uAlpha", _alpha);
+    shader->SetParameter<float>("uBeta", _beta);
+    shader->SetParameter<float>("uGamma", _gamma);
 
     glBindVertexArray(_lightningVAO[_swapIndex]);
     // Transform feedback goes into the other VBO.

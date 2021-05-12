@@ -89,8 +89,16 @@ void Canvas::init() {
     LightningNode top = { glm::vec2(400, 800), 0, 10 };
     LightningNode bot = { glm::vec2(400, 0), 0, 8 };
     std::vector<LightningNode> keyNodes{ top, bot };
+    //for (int i = 0; i < 32; i++) {
+    //    float x = i * 800.f / 32;
+    //    float t = x / 800.f * 10;
+    //    keyNodes.push_back({ glm::vec2(x, 400 + sin(t) * 200), 0, 2 });
+    //    if (i != 0 && i != 31) {
+    //        keyNodes.push_back({ glm::vec2(x, 400 + sin(t) * 200), 0, 2 });
+    //    }
+    //}
 
-    _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 5.14), 0.1f, 0.1f);
+    _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 3.554), 0.5f, 0.3f, 0.6f);
 
     for (int i = 0; i < 12; i++) {
         _lightningTree->RunOneStep(_renderer);
