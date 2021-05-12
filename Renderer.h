@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -12,22 +12,21 @@ public:
     ~Renderer();
 
     void ClearCurrentFrame();
-    void CreateNewFrameBuffer(int width, int height);
-    void SwitchFrameBuffer();
-    void ResetFrameBuffer();
+    GLuint CreateNewFrameBuffer(int width, int height, GLuint& texID);
+    void SwitchFrameBuffer(GLuint index);
 
 
     void Begin(glm::mat4 transformMatrix);
     void End();
 
     void DrawLines(GLuint VAO, float width, int points);
-    void DrawLightningToScreen();
+    void DrawLightningToScreen(GLuint texture);
+
+    void DrawLightningGaussian(GLuint texture, bool horizontal);
 
     std::shared_ptr<Shader> GetGeometryShader() const { return _geometryShader; }
 
 private:
-    GLuint _fbo;
-    GLuint _fboTexture;
 
     struct DrawState {
         glm::mat4 transform;
@@ -40,6 +39,7 @@ private:
     std::shared_ptr<Shader> _geometryShader;
     std::shared_ptr<Shader> _lineShader;
     std::shared_ptr<Shader> _bloomShader;
+    std::shared_ptr<Shader> _screenShader;
 
     GLuint _mainVAO, _mainVBO;
 

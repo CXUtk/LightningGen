@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -7,7 +7,7 @@
 
 class Shader {
 public:
-    Shader(GLuint programID) : _id(programID) { }
+    Shader(GLuint programID) : _id(programID) {}
 
     void Apply() { glUseProgram(_id); }
 
@@ -41,6 +41,11 @@ inline void Shader::SetParameter(const GLchar* name, glm::vec3 value) {
 template<>
 inline void Shader::SetParameter(const GLchar* name, glm::mat4 value) {
     glUniformMatrix4fv(glGetUniformLocation(this->_id, name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+template<>
+inline void Shader::SetParameter(const GLchar* name, bool value) {
+    glUniform1i(glGetUniformLocation(this->_id, name), value);
 }
 
 template<typename T>

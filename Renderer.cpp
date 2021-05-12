@@ -1,4 +1,4 @@
-#include "Renderer.h"
+﻿#include "Renderer.h"
 
 Renderer::Renderer(int width, int height) {
     stacktop = 0;
@@ -8,6 +8,7 @@ Renderer::Renderer(int width, int height) {
     _geometryShader = std::make_shared<Shader>(loadVertexGeometryShader("../../../shaders/lightning_gen.vs", "../../../shaders/lightning_gen.geom", feedbackValues, 3));
     _lineShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/line.vs", "../../../shaders/line.frag"));
     _bloomShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/bloom.vs", "../../../shaders/bloom.frag"));
+    _screenShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/bloom.vs", "../../../shaders/screen.frag"));
 
     initialize(width, height);
 }
@@ -20,13 +21,14 @@ void Renderer::ClearCurrentFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::CreateNewFrameBuffer(int width, int height) {
-    glGenFramebuffers(1, &_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
-   
+GLuint Renderer::CreateNewFrameBuffer(int width, int height, GLuint& textureID) {
+    GLuint fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    glGenTextures(1, &_fboTexture);
-    glBindTexture(GL_TEXTURE_2D, _fboTexture);
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
@@ -36,22 +38,21 @@ void Renderer::CreateNewFrameBuffer(int width, int height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
+        return 0;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return fbo;
 }
 
-void Renderer::SwitchFrameBuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+void Renderer::SwitchFrameBuffer(GLuint index) {
+    glBindFramebuffer(GL_FRAMEBUFFER, index);
 }
 
-void Renderer::ResetFrameBuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
 
 void Renderer::Begin(glm::mat4 transformMatrix) {
     stack[++stacktop] = DrawState{ transformMatrix };
@@ -72,15 +73,33 @@ void Renderer::DrawLines(GLuint VAO, float width, int points) {
     glBindVertexArray(0);
 }
 
-void Renderer::DrawLightningToScreen() {
+
+
+void Renderer::DrawLightningToScreen(GLuint texture) {
+    _screenShader->Apply();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    _screenShader->SetParameter<glm::mat4>("transform", getCurrentTransform());
+    _screenShader->SetParameter<glm::vec3>("uColor", glm::vec3(0.1, 0.2, 1.0));
+    _screenShader->SetParameter<int>("uTexture", 0);
+
+
+    glBindVertexArray(_mainVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+void Renderer::DrawLightningGaussian(GLuint texture, bool horizontal) {
     _bloomShader->Apply();
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _fboTexture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
     _bloomShader->SetParameter<glm::mat4>("transform", getCurrentTransform());
-    _bloomShader->SetParameter<glm::vec3>("uColor", glm::vec3(0.1, 0.2, 1.0));
-    _bloomShader->SetParameter<int>("uScreenTexture", 0);
+    _bloomShader->SetParameter<int>("uTexture", 0);
+    _bloomShader->SetParameter<bool>("uHorizontal", horizontal);
 
 
     glBindVertexArray(_mainVAO);
@@ -119,4 +138,3 @@ void Renderer::initialize(int width, int height) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
-

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -26,4 +26,7 @@ private:
 
     std::shared_ptr<Renderer> _renderer;
     std::shared_ptr<LightningTree> _lightningTree;
+
+    GLuint _fbo[2];
+    GLuint _fboTexture[2];
 };

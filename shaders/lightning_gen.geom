@@ -63,8 +63,8 @@ void main() {
     float prob = randFloat(coord);
     if ( Round - vBranch[0] < 5 && prob < 0.6 * exp(-0.4 * Round) ) {
         pos = tPos;
-        strength = min(tStrength, 2.0);
-        branch = vBranch[0] + 1;
+        strength = tStrength * 0.5;
+        branch = tBranch + 1;
         EmitVertex();
 
         vec2 branchPos = tPos - randFloat(tPos) * unit;
@@ -73,7 +73,7 @@ void main() {
         float branchLength = (tPos.y * 0.5 + 100) * exp(-0.5 * vBranch[0]) * (0.3 + 0.8 * randFloat(branchPos));
         pos = tPos + branchDir * branchLength;
         branch = vBranch[0] + 1;
-        strength = 0;
+        strength = 0.0;
         EmitVertex();
     }
 

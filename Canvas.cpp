@@ -1,4 +1,4 @@
-#include "Canvas.h"
+﻿#include "Canvas.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -39,7 +39,7 @@ Canvas::Canvas(int width, int height) : _width(width), _height(height) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-    
+
     _window = glfwCreateWindow(width, height, "Lightning Generator", nullptr, nullptr);
     if (!_window) {
         fprintf(stderr, "Failed to create window\n");
@@ -69,29 +69,20 @@ void Canvas::draw() {
 
     auto projView = projection * view;
 
-    // Render to texture module
-    _renderer->SwitchFrameBuffer();
+    _renderer->SwitchFrameBuffer(0);
     _renderer->ClearCurrentFrame();
     _renderer->Begin(projView);
     {
-        _lightningTree->Draw(_renderer);
-    }
-    _renderer->End();
-
-
-    // Render to screen
-    _renderer->ResetFrameBuffer();
-    _renderer->ClearCurrentFrame();
-    _renderer->Begin(projView);
-    {
-        _renderer->DrawLightningToScreen();
+        _renderer->DrawLightningToScreen(_fboTexture[1]);
     }
     _renderer->End();
 }
 
 void Canvas::init() {
     _renderer = std::make_shared<Renderer>(_width, _height);
-    _renderer->CreateNewFrameBuffer(_width, _height);
+
+    _fbo[0] = _renderer->CreateNewFrameBuffer(_width, _height, _fboTexture[0]);
+    _fbo[1] = _renderer->CreateNewFrameBuffer(_width, _height, _fboTexture[1]);
 
 
     // A straight vertical path from top to bottom
@@ -100,8 +91,45 @@ void Canvas::init() {
     std::vector<LightningNode> keyNodes{ top, bot };
 
     _lightningTree = std::make_shared<LightningTree>(keyNodes, glm::vec2(1.14, 5.14), 0.1f, 0.1f);
-    
+
     for (int i = 0; i < 12; i++) {
         _lightningTree->RunOneStep(_renderer);
     }
+
+    auto projection = glm::ortho(0.f, static_cast<float>(WINDOW_WIDTH), 0.f, static_cast<float>(WINDOW_HEIGHT));
+    auto view = glm::identity<glm::mat4>();
+
+    auto projView = projection * view;
+
+    // Render to texture module
+    _renderer->SwitchFrameBuffer(_fbo[0]);
+    _renderer->ClearCurrentFrame();
+    _renderer->Begin(projView);
+    {
+        glEnable(GL_BLEND);
+        glBlendEquation(GL_MAX);
+        _lightningTree->Draw(_renderer);
+        glDisable(GL_BLEND);
+    }
+    _renderer->End();
+
+
+
+    //Render bloom effect
+    _renderer->SwitchFrameBuffer(_fbo[1]);
+    _renderer->ClearCurrentFrame();
+    _renderer->Begin(projView);
+    {
+        _renderer->DrawLightningGaussian(_fboTexture[0], true);
+    }
+    _renderer->End();
+
+    //_renderer->SwitchFrameBuffer(_fbo[0]);
+    //_renderer->ClearCurrentFrame();
+    //_renderer->Begin(projView);
+    //{
+    //    _renderer->DrawLightningGaussian(_fboTexture[1], false);
+    //}
+    //_renderer->End();
+
 }
