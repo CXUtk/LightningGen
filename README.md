@@ -4,10 +4,12 @@ he purpose of this project is to reproduce the lightning effect in the real worl
 # Compile Instruction
 Make sure you are in the Lightning directory
 Then type in the following commands: 
-`$ mkdir build`
-`$ cd build`
-`$ cmake ..`
-`$ make`
+```bash
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+```
 
 Then copy the files in the `shaders` folder to the `build` folder, because the program needs these shader files in the same directory to run.
 
