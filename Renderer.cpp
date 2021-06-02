@@ -5,10 +5,10 @@ Renderer::Renderer(int width, int height) {
     memset(stack, 0, sizeof(stack));
 
     const char* feedbackValues[3] = { "pos", "branch", "strength" };
-    _geometryShader = std::make_shared<Shader>(loadVertexGeometryShader("../../../shaders/lightning_gen.vs", "../../../shaders/lightning_gen.geom", feedbackValues, 3));
-    _lineShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/line.vs", "../../../shaders/line.frag"));
-    _bloomShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/bloom.vs", "../../../shaders/bloom.frag"));
-    _screenShader = std::make_shared<Shader>(loadVertexFragmantShader("../../../shaders/bloom.vs", "../../../shaders/screen.frag"));
+    _geometryShader = std::make_shared<Shader>(loadVertexGeometryShader("lightning_gen.vs", "lightning_gen.geom", feedbackValues, 3));
+    _lineShader = std::make_shared<Shader>(loadVertexFragmantShader("line.vs", "line.frag"));
+    _bloomShader = std::make_shared<Shader>(loadVertexFragmantShader("bloom.vs", "bloom.frag"));
+    _screenShader = std::make_shared<Shader>(loadVertexFragmantShader("bloom.vs", "screen.frag"));
 
     initialize(width, height);
 }

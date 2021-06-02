@@ -70,7 +70,7 @@ GLuint loadVertexFragmantShader(const std::string& vertexPath, const std::string
         vertexCode = vSS.str(), fragmentCode = fSS.str();
     }
     catch (std::ifstream::failure e) {
-        std::cerr << "Failed to load shaders" << std::endl;
+        std::cerr << "Failed to load shaders: "  << vertexPath << ", " << fragmentPath << std::endl;
         throw std::exception(e.what());
     }
     int vertex = compileVertexShader(vertexCode);
@@ -113,7 +113,7 @@ GLuint loadVertexGeometryShader(const std::string& vertexPath, const std::string
         vertexCode = vSS.str(), geometryCode = gSS.str();
     }
     catch (std::ifstream::failure e) {
-        std::cerr << "Failed to load shaders" << std::endl;
+        std::cerr << "Failed to load shaders: " << vertexPath << ", " << geometryPath << std::endl;
         throw std::exception(e.what());
     }
     int vertex = compileVertexShader(vertexCode);
